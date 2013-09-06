@@ -74,6 +74,10 @@ fi
 SRC_PATH=${1%%/}
 DEST_PATH=${2%%/}
 
+# prepare convenience variables
+GIT_PROJECT=$(basename $DEST_PATH)
+DEST_PATH=$(dirname $DEST_PATH)
+
 # ensure paths are valid
 if [ ! -d "$SRC_PATH" ]; then
  echo "Fatal: source path does not exist ($SRC_PATH)" >&2
@@ -85,11 +89,6 @@ if [ ! "${DEST_PATH##/*}" = "$DEST_PATH" ]; then
  DEST_PATH_CANONICAL="$(readlink -m $DEST_PATH)"
 else
  DEST_PATH_CANONICAL="$(readlink -m $PWD/$DEST_PATH)"
-fi
-
-# if destination is the same as current working directory use an empty string not relative navigation
-if [ "$DEST_PATH_CANONICAL" = "$PWD" ]; then
- DEST_PATH=""
 fi
  
 # ensure destination isn't outside the working directory
@@ -126,9 +125,6 @@ if [ ! -r "$GIT_MODULES" ]; then
  echo "Fatal: Cannot find any submodules (no ./.gitmodules)" >&2
  exit 5
 fi
-
-# prepare convenience variables
-GIT_PROJECT=$(basename $SRC_PATH)
 
 # determine new relative-path displacement (how many "../" )
 REL_PATH_QTY=0
